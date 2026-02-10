@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Career Navigator - Full</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container { max-width: 900px; margin: auto; }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        
+        .form-group { margin-bottom: 20px; }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .results { display: none; }
+        
+        .career-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 6px solid #667eea;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .career-card:first-child {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            border-left-color: #f39c12;
+        }
+        
+        .career-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .score {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .suitability-text {
+            background: #e8f5e9;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            color: #2e7d32;
+            font-weight: 600;
+        }
+        
+        .gap-section {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .missing-skill {
+            display: inline-block;
+            background: #ffebee;
+            color: #c62828;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin: 3px;
+            font-size: 0.9em;
+        }
+        
+        .matched-skill {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin: 3px;
+            font-size: 0.9em;
+        }
+        
+        .roadmap-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 8px;
+        }
+        
+        .loading { display: none; text-align: center; color: white; padding: 20px; }
+        
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🎯 AI Career Navigator</h1>
+        <p>Complete ML-powered career guidance system</p>
+    </div>
+
+    <div id="formSection" class="card">
+        <form id="careerForm">
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Department *</label>
+                    <select id="department" required>
+                        <option value="">Select</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Information Tech">Information Tech</option>
+                        <option value="Mechanical">Mechanical</option>
+                        <option value="Civil">Civil</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Current Year *</label>
+                    <select id="year" required>
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3">3rd Year</option>
+                        <option value="4">4th Year</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>CGPA (0-10) *</label>
+                <input type="number" step="0.1" min="0" max="10" id="cgpa" required>
+            </div>
+
+            <label>Skills</label>
+            <div class="checkbox-group" id="skillsGroup">
+                <label class="checkbox-item">
+                    <input type="checkbox" value="python"> Python
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" value="java"> Java
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" value="sql"> SQL
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" value="machine learning"> ML
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" value="autocad"> AutoCAD
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" value="figma"> Figma
+                </label>
+            </div>
+
+            <label style="margin-top:20px;">Interests</label>
+            <div class="checkbox-group" id="interestsGroup">
+                <label class="checkbox-item">
+                    <input type="checkbox" value="ai"> AI
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" value="coding"> Coding
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" value="design"> Design
+                </label>
+            </div>
+
+            <label style="margin-top:20px;">Personality (NEW)</label>
+            <div class="checkbox-group">
+                <label class="checkbox-item">
+                    <input type="checkbox" id="logic_thinking"> Logical Thinking
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="teamwork"> Teamwork
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="risk_taking"> Risk Taking
+                </label>
+            </div>
+
+            <button type="submit" class="btn">🚀 Get Complete Analysis</button>
+        </form>
+    </div>
+
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>AI is analyzing...</p>
+    </div>
+
+    <div id="resultsSection" class="results card">
+        <h2>Career Recommendations for <span id="resName" style="color: #667eea;"></span></h2>
+        <div id="recommendationsContainer"></div>
+        <button class="btn" onclick="location.reload()" style="background: #95a5a6;">New Analysis</button>
+    </div>
+</div>
+
+<script>
+    const API_URL = "http://127.0.0.1:5001";
+    let studentId = null;
+
+    document.getElementById("careerForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const payload = {
+            name: document.getElementById("name").value,
+            department: document.getElementById("department").value,
+            year: parseInt(document.getElementById("year").value),
+            cgpa: parseFloat(document.getElementById("cgpa").value),
+            skills: Array.from(document.querySelectorAll('#skillsGroup input:checked'))
+                .map(cb => cb.value).join(", "),
+            interests: Array.from(document.querySelectorAll('#interestsGroup input:checked'))
+                .map(cb => cb.value).join(", "),
+            logic_thinking: document.getElementById("logic_thinking").checked ? 1 : 0,
+            teamwork: document.getElementById("teamwork").checked ? 1 : 0,
+            risk_taking: document.getElementById("risk_taking").checked ? 1 : 0
+        };
+
+        document.getElementById("formSection").style.display = "none";
+        document.getElementById("loading").style.display = "block";
+
+        try {
+            const response = await fetch(`${API_URL}/api/recommend`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                studentId = data.student.id;
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("resultsSection").style.display = "block";
+                document.getElementById("resName").textContent = data.student.name;
+
+                const container = document.getElementById("recommendationsContainer");
+                container.innerHTML = "";
+
+                data.recommendations.forEach((rec, index) => {
+                    const card = `
+                        <div class="career-card">
+                            <div class="career-header">
+                                <h3>${index === 0 ? '🏆 ' : ''}${rec.career}</h3>
+                                <div class="score">${rec.score}%</div>
+                            </div>
+                            
+                            <div class="suitability-text">
+                                ${rec.suitability_text}
+                            </div>
+                            
+                            <p><strong>💰 Salary:</strong> ${rec.salary} | <strong>📈 Growth:</strong> ${rec.growth}</p>
+                            
+                            <div class="gap-section">
+                                <h4>📊 Skill Gap Analysis</h4>
+                                <p><strong>Match:</strong> ${rec.gap_analysis.match_percentage}%</p>
+                                ${rec.gap_analysis.matched.length > 0 ? `
+                                    <div style="margin-top: 10px;">
+                                        <strong>✅ You Have:</strong><br>
+                                        ${rec.gap_analysis.matched.map(s => `<span class="matched-skill">${s}</span>`).join('')}
+                                    </div>
+                                ` : ''}
+                                ${rec.gap_analysis.missing.length > 0 ? `
+                                    <div style="margin-top: 10px;">
+                                        <strong>❌ Missing:</strong><br>
+                                        ${rec.gap_analysis.missing.map(s => `<span class="missing-skill">${s}</span>`).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                            
+                            ${rec.semester_roadmap.skills.length > 0 ? `
+                                <div class="roadmap-section">
+                                    <h4>📚 Year ${rec.semester_roadmap.year} Roadmap</h4>
+                                    <ul>
+                                        ${rec.semester_roadmap.skills.map(s => `<li>${s}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                            
+                            <button class="btn" style="margin-top: 10px; padding: 10px;" 
+                                onclick="submitFeedback('${rec.career}', 1)">
+                                👍 Helpful
+                            </button>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+            }
+        } catch (error) {
+            alert("Backend not running on port 5001!");
+            location.reload();
+        }
+    });
+
+    async function submitFeedback(career, helpful) {
+        if (!studentId) return;
+        
+        try {
+            await fetch(`${API_URL}/api/feedback`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    career: career,
+                    helpful: helpful
+                })
+            });
+            alert("Feedback submitted! This helps improve recommendations.");
+        } catch (error) {
+            console.error("Feedback error:", error);
+        }
+    }
+</script>
+
+</body>
+</html>
